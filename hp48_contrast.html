@@ -1,0 +1,84 @@
+<HTML>
+<HEAD>
+
+<TITLE>The HP48-Page of Daniel Lidstr&#0246m</TITLE>
+
+
+
+<META NAME="keywords" CONTENT="HP48, ml, sys, rpl, daniel, lidström, lidstrom">
+<META NAME="description" CONTENT="Great page! Come see!">
+<META NAME="generator" CONTENT="Notepad">
+<META NAME="author" CONTENT="Daniel Lidström">
+
+<SCRIPT LANGUAGE="JavaScript">
+</SCRIPT>
+</HEAD>
+
+
+<BODY>
+<CENTER>
+<FONT SIZE="+5" FACE="hp48gos3">HP48 Sources Page.</FONT> <P>
+</CENTER>
+
+<HR>
+
+So you want to change the contrast from within a program? Well, here's how you
+can do it. <BR>
+<H3>Recalling the contrast.</H3>
+Returns the contrast as 0 <= con <= 31. <BR>
+
+<PRE>
+Name: RCON
+Size: 27.5 Checksum: # 57CAh
+CODE
+	GOSBVL	=SAVPTR		save the internal pointers
+	D1=(5)	=CONTRAST	point D1 to the contrast value
+	A=0	A		zero out A[A]
+	A=DAT1	B		read the contrast
+	R0=A.F	A		prepare to push
+	GOSBVL	=PUSH#		push the bint to the stack
+	LC(5)	=UNCOERCE	exit, converting the bint to a real
+	A=C	A
+	PC=(A)
+ENDCODE
+</PRE>
+
+<H3>Setting the contrast.</H3>
+Given a real i in the interval 0 <= i <= 31 it sets the contrast to i.<BR>
+
+<PRE>
+Name: SCON
+Size: 44 Checksum: # CA03h
+::
+ CK1NoBlame	(need one argument)
+ CKREAL		(must be a real)
+ COERCE		(convert to bint)
+ THIRTYONE	(check the range)
+ OVER#<
+ case
+ SETSIZEERR	(error if >31)
+ CODE
+	GOSBVL	=POP#		pop the number into A[A]
+	CD1EX			save D1 in C
+	D1=(5)	=CONTRAST	point D1 to contrast
+	DAT1=A	B		set the contrast
+	CD1EX			restore D1
+	A=DAT0	A		exit code object
+	D0=D0+	5
+	PC=(A)
+ENDCODE
+;
+</PRE>
+
+<H3>A nice off-effect.</H3>
+Assign this program to your off key and the HP will fade out every time you turn it off and it will fade in
+when you turn it on. <BR>
+<PRE>
+Size: 101.5 Checksum: #9B83h
+</PRE><TT>
+<< RCON DUP 0 FOR i i SCON .1 WAIT -1 STEP 0 SWAP OFF FOR i i SCON .1 WAIT NEXT >>
+</TT><P>
+Type it in and assign it to the off key: <TT>91.3 ASN</TT>
+<P>
+</BODY>
+</HTML>

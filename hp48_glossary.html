@@ -1,0 +1,119 @@
+<HTML>
+<HEAD>
+<TITLE>HP48 Assembly-Programming</TITLE>
+<BODY BGCOLOR="#FFFFFF">
+
+</HEAD>
+
+<BODY>
+
+<H1> Glossary </H1>
+This is the recommended column alignment:
+<PRE>
+1       9       17              33       ...   80
+-------------------------------------------------
+Label   Opcode  Modifier        Comments ...
+-------------------------------------------------
+</PRE>
+This is how you would structure your code. I.e. you write your labels in columns 1-8, your opcode in 9-16,
+modifier starts in column 17. Comments start in column 33. <BR>
+Ex: <BR>
+<PRE>
+drlp	DAT1=A	W		draw 16 nibbles to the screen
+</PRE>
+
+Bint: <BR>
+A data type used internally by the HP48. The real binary. The user rpl binary is actually a hexstring. That's right, it's closer
+to a string than to a binary integer. <P>
+
+Entry: <BR>
+An address in ROM that can be called from a program (a subroutine).<P>
+
+Hex: <BR>
+The most common mode when programming system rpl and ml. You will need to understand this mode.<P>
+<TABLE BORDER CELLSPACING=2 CELLPADDING=4 WIDTH="189" >
+<TR>
+<TD WIDTH="50%" BGCOLOR="#FFFFFF">
+<CENTER><B><FONT SIZE=+0>Decimal</FONT></B></CENTER>
+</TD>
+<TD WIDTH="50%" BGCOLOR="#FFFFFF">
+<CENTER><B><FONT SIZE=+0>Hexadecimal</FONT></B></CENTER>
+</TD></TR><TR>
+<TD ALIGN=LEFT WIDTH="50%">
+<CENTER><FONT SIZE=+1># 0d</FONT></CENTER>
+<CENTER><FONT SIZE=+1># 1d</FONT></CENTER>
+<CENTER><FONT SIZE=+1># 2d</FONT></CENTER>
+<CENTER><FONT SIZE=+1># 3d</FONT></CENTER>
+<CENTER><FONT SIZE=+1># 4d</FONT></CENTER>
+<CENTER><FONT SIZE=+1># 5d</FONT></CENTER>
+<CENTER><FONT SIZE=+1># 6d</FONT></CENTER>
+<CENTER><FONT SIZE=+1># 7d</FONT></CENTER>
+<CENTER><FONT SIZE=+1># 8d</FONT></CENTER>
+<CENTER><FONT SIZE=+1># 9d</FONT></CENTER>
+<CENTER><FONT SIZE=+1># 10d</FONT></CENTER>
+<CENTER><FONT SIZE=+1># 11d</FONT></CENTER>
+<CENTER><FONT SIZE=+1># 12d</FONT></CENTER>
+<CENTER><FONT SIZE=+1># 13d</FONT></CENTER>
+<CENTER><FONT SIZE=+1># 14d</FONT></CENTER>
+<CENTER><FONT SIZE=+1># 15d</FONT></CENTER>
+<CENTER><FONT SIZE=+1># 16d</FONT></CENTER>
+<CENTER><FONT SIZE=+1># 100d</FONT></CENTER>
+<CENTER><FONT SIZE=+1># 255d</FONT></CENTER>
+<CENTER><FONT SIZE=+1>..</FONT></CENTER>
+</TD>
+<TD ALIGN=LEFT WIDTH="50%">
+<CENTER><FONT SIZE=+1># 0h</FONT></CENTER>
+<CENTER><FONT SIZE=+1># 1h</FONT></CENTER>
+<CENTER><FONT SIZE=+1># 2h</FONT></CENTER>
+<CENTER><FONT SIZE=+1># 3h</FONT></CENTER>
+<CENTER><FONT SIZE=+1># 4h</FONT></CENTER>
+<CENTER><FONT SIZE=+1># 5h</FONT></CENTER>
+<CENTER><FONT SIZE=+1># 6h</FONT></CENTER>
+<CENTER><FONT SIZE=+1># 7h</FONT></CENTER>
+<CENTER><FONT SIZE=+1># 8h</FONT></CENTER>
+<CENTER><FONT SIZE=+1># 9h</FONT></CENTER>
+<CENTER><FONT SIZE=+1># Ah</FONT></CENTER>
+<CENTER><FONT SIZE=+1># Bh</FONT></CENTER>
+<CENTER><FONT SIZE=+1># Ch</FONT></CENTER>
+<CENTER><FONT SIZE=+1># Dh</FONT></CENTER>
+<CENTER><FONT SIZE=+1># Eh</FONT></CENTER>
+<CENTER><FONT SIZE=+1># Fh</FONT></CENTER>
+<CENTER><FONT SIZE=+1># 10h</FONT></CENTER>
+<CENTER><FONT SIZE=+1># 64h</FONT></CENTER>
+<CENTER><FONT SIZE=+1># FFh</FONT></CENTER>
+<CENTER><FONT SIZE=+1>..</FONT></CENTER>
+</TD></TR>
+</TABLE></CENTER><P>
+
+Interrupt system:<BR>
+Interrupts can be a low-bat condition, a key being pressed, and a whole lot of others I don't know about.
+Can cause a considerable slowdown of your program if not disabled.<P>
+
+Label:<BR>
+An optional label. <P>
+
+Mnemonic: <BR>
+This is what we write instead of what the assembler creates. Example: Mnemonic C=C+A A will be translated to C2.
+In the beginning, people wrote code using the binary translation of the instructions. Much harder and more time consuming. <P>
+
+Modifier:<BR>
+Second part of the instruction. Can for example indicate which part of a working register will be used. <P>
+
+Nibble:<BR>
+A half-byte quantity, four bits.<P>
+
+Offset:<BR>
+Just a length (in nibbles).<P>
+
+Opcode:<BR>
+Part of the instruction. <P>
+
+Pop:<BR>
+Synonym for drop. <P>
+
+Prolog:<BR>
+The first five nibbles of an object that identifies what object it is. I.e. =DOCSTR
+identifies it as a string.<P>
+
+</BODY>
+</HTML>

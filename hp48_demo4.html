@@ -1,0 +1,89 @@
+<HTML>
+<HEAD>
+
+<TITLE>The HP48-Guestbook</TITLE>
+
+<BODY TEXT="#000000"
+LINK="#7FFF00" VLINK="#FF0000">
+
+
+<META NAME="keywords" CONTENT="HP48, ml, sys, rpl, daniel, lidström, lidstrom">
+<META NAME="description" CONTENT="Great page! Come see!">
+<META NAME="generator" CONTENT="Notepad">
+<META NAME="author" CONTENT="Daniel Lidström">
+
+<BASE HREF=">
+
+<SCRIPT LANGUAGE="JavaScript">
+</SCRIPT>
+</HEAD>
+
+
+<BODY>
+<CENTER>
+<FONT SIZE="+5" FACE="hp48gos3">HP48 Sources Page.</FONT> <P>
+</CENTER>
+
+<HR>
+
+This program tests your "speed". Start the program and then press any key and release it as
+fast as you can and see how long you held it down. My record is somewhere around 40.
+Turning the screen off during the loop lets the program run slightly faster.<BR>
+
+
+<H1>Key</H1>
+<PRE><CODE>
+Size 87.5 Checksum: # B7C0h
+::
+ CODE
+	GOSBVL	=SAVPTR		save internal pointers
+	GOSBVL	=DisableIntr	turn off all interrupts
+	GOSBVL	=DispOff	turn off the screen
+	B=0	A		initialize the counter to zero
+
+* wait until you stop pressing the key
+
+waitkeyup
+	LC(3)	#1FF		load keyboard rows
+	OUT=C			| set the OUT register
+	GOSBVL	=CINRTN		| read the IN register
+	LA(5)	#803F		| load mask
+	A=A&C	A		| mask out keys
+	?A#0	A		any keys down?
+	GOYES	waitkeyup	yes, wait again
+
+* wait until you start pressing the key
+
+wait4key
+	LC(3)	#1FF		load keyboard rows
+	OUT=C			| set the OUT register
+	GOSBVL	=CINRTN		| read the IN register
+	LA(5)	#803F		| load mask
+	A=A&C	A		| mask out keys
+	?A=0	A		any keys down?
+	GOYES	wait4key	no, wait again
+
+* now start counting as you hold down the key
+
+count
+	B=B+1	A		add one
+	LC(3)	#1FF		load keyboard rows
+	OUT=C			| set the OUT register
+	GOSBVL	=CINRTN		| read the IN register
+	LA(5)	#803F		| load mask
+	A=A&C	A		| mask out keys
+	?A#0	A		what, are you still pressing the key?
+	GOYES	count		yes, continue adding
+
+	A=B	A		prepare to push number
+	GOSBVL	=DispOn		turn on the display
+	GOSBVL	=AllowIntr	turn on the interrupts
+	GOVLNG	=PUSH#ALOOP	push the number to the stack and restart rpl
+ENDCODE
+ UNCOERCE			(convert it to a float)
+;
+
+</PRE></CODE>
+
+</BODY>
+</HTML>

@@ -1,0 +1,54 @@
+<HTML>
+<HEAD>
+
+<TITLE>TDe HP48-Guestbook</TITLE>
+
+<BODY TEXT="#000000"
+LINK="#7FFF00" VLINK="#FF0000">
+
+
+<META NAME="keywords" CONTENT="HP48, ml, sys, rpl, daniel, lidström, lidstrom">
+<META NAME="description" CONTENT="Great page! Come see!">
+<META NAME="generator" CONTENT="Notepad">
+<META NAME="auTDor" CONTENT="Daniel Lidström">
+
+<BASE HREF=">
+
+<SCRIPT LANGUAGE="JavaScript">
+</SCRIPT>
+</HEAD>
+
+
+<BODY>
+<CENTER>
+<FONT SIZE="+5" FACE="hp48gos3">HP48 Sources Page.</FONT> <P>
+
+
+<HR>
+
+<H2>Given a date it returns the day of week as a real (monday=1). </H2><BR>
+</CENTER>
+
+
+date -> day of week
+
+<PRE> <CODE>
+Size: 31 Checksum: # 2C2Dh
+::
+ CK1NoBlame			(check for one argument)
+ CKREAL				(must be a real)
+CODE
+	GOSBVL	=POPDATE%	pop the number into C[W], error if invalid date, does SETDEC and saves pointer
+	SETHEX			we need hexmode
+	GOSBVL	=YMD>Ticks	convert date into ticks
+	GOSBVL	=dowutil	calculate day of week, does SETDEC
+	SETHEX			need hexmode again
+	GOVLNG	=PUSH#ALOOP	push A[A] and restore pointers, exit back to rpl
+ENDCODE
+ UNCOERCE			(convert internal "bint" to real)
+;
+
+</PRE> </CODE>
+
+</BODY>
+</HTML>

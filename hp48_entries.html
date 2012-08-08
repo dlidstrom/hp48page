@@ -1,0 +1,42 @@
+<HTML>
+<HEAD>
+<TITLE>HP48 Assembly-Programming</TITLE>
+<BODY BGCOLOR="#FFFFFF">
+</HEAD>
+<BODY>
+<H1>Entries</H1>
+Take a look at the sorted <A HREF="ent_srt.zip">entries</A>
+to find most of the entries you would ever need. I keep it printed
+and refer to it all the time.
+<P>
+There are some things you will have to know in order to make use
+of this document. Lets take a look at an example:
+<PRE>
+*****************************************************************
+=PUSH#		EQU #03F5D *	Stack: ( --> # )
+* Entry:	R0[A]=num P=0 HEX RPLRAM
+* Exit:		P=0 HEX RPLCPU A[A]=->bintob
+* Alters:	A[15-5] B[15-5] C D[15-5] ST0 ST10
+* Stack:	3
+*****************************************************************
+</PRE>
+The name of the entry is =PUSH#, this is what you would type in
+your program. You would probably call it with GOSBVL. An entry
+that restarts rpl should be called with GOVLNG. <BR>
+The address is #03F5D. You shouldn't have to worry about this.<BR>
+The stack diagram ( --> # ) shows what happens on the stack. Here
+the symbol # is used to indicate that a bint is pushed on the stack.<BR>
+On entry, that is when you call the subroutine, a few conditions must 
+be met. R0[A] contains the number, P must be 0, the cpu must be in 
+HEXMODE, and the pointers must have been saved (RPLRAM=saved, 
+RPLCPU=restored).<BR>
+On exit, when the program continues after the subroutine, P is 0,
+cpu is in HEXMODE, the pointers are restored, A[A] contains the address
+to the pushed bint. <BR>
+When this subroutine is executed, it may alter a few registers. In this
+case the nibbles 15-5 in A, B, and D as well as the entire C are
+altered. This means you shouldn't have important data in these places as
+they will be lost. Status flags 0 and 10 and three stack
+levels on the return stack are also used.
+</BODY>
+</HTML>

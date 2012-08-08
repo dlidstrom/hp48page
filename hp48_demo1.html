@@ -1,0 +1,96 @@
+<HTML>
+<HEAD>
+
+<TITLE>The HP48-Guestbook</TITLE>
+
+<BODY TEXT="#000000"
+LINK="#7FFF00" VLINK="#FF0000">
+
+
+<META NAME="keywords" CONTENT="HP48, ml, sys, rpl, daniel, lidström, lidstrom">
+<META NAME="description" CONTENT="Great page! Come see!">
+<META NAME="generator" CONTENT="Notepad">
+<META NAME="author" CONTENT="Daniel Lidström">
+
+<BASE HREF=">
+
+<SCRIPT LANGUAGE="JavaScript">
+</SCRIPT>
+</HEAD>
+
+
+<BODY>
+<CENTER>
+<FONT SIZE="+5" FACE="hp48gos3">HP48 Sources Page.</FONT> <P>
+
+
+<HR>
+
+Here's a little program that produces a nice effect on the screen. <BR>
+</CENTER>
+
+
+<H1>DEMO1</H1>
+<PRE><CODE>
+Size: 122.5 Checksum: # D5FCh
+::
+ RECLAIMDISP			(clear the screen)
+ TURNMENUOFF			(turn the menu off)
+CODE
+	GOSBVL	=SAVPTR		save internal pointers
+	GOSBVL	=DisableIntr	turn off all interrupts, yes go ahead, ON-A-F won't work!
+	GOSUB	waitkeyup	wait for user to let go of key
+	GOSBVL	=D0->Row1	D0,A[A] -> top left corner of display
+	R0=A.F	A		save here
+	D1=(5)	=CRC		D1 -> hardware checksum, try changing this to =TIMER1
+toplp	C=R0.F	A		get screen address
+	D0=C			point D0 here
+	LC(5)	#3F
+	B=C	A		B[A] = 64-1 (64 pixel rows)
+drawlp	C=DAT0	4		read from screen to randomize hardware checksum
+	C=DAT1	4		read hardware checksum
+	P=	3
+	A=C	WP		fill A[W] with C[WP]
+	GOSBVL	(=ASLW5)+3	| shift A[W] left 4 times
+	A=C	WP		|
+	GOSBVL	(=ASLW5)+3	|
+	A=C	WP		|
+	GOSBVL	(=ASLW5)+3	|
+	A=C	WP		|
+	DAT0=A	W		write it out to screen
+	D0=D0+	16		point D0 to next 64 (16*4) pixels
+	DAT0=A	W		write again
+	D0=D0+	16		...
+	DAT0=A	2		and the last 8 pixels
+	D0=D0+	2		D0 points to next row
+	B=B-1	A
+	GONC	drawlp		loop until done
+	P=	0
+* read the keyboard
+	LC(3)	#1FF		load keyboard rows
+	OUT=C			| set the OUT register
+	GOSBVL	=CINRTN		| read the IN register
+	LA(5)	#803F		| set mask for all keys
+	A=A&C	A		| mask out keys
+	?A=0	A		were any keys down?
+	GOYES	toplp		no, draw screen again
+	GOSUB	waitkeyup	yes, wait for user to let go of key
+	GOSBVL	=AllowIntr	turn on interrupts again
+	GOVLNG	=GETPTRLOOP	exit back to rpl, restoring pointers
+* wait here until no keys are down
+waitkeyup
+	LC(3)	#1FF		load keyboard rows
+	OUT=C			| set the OUT register
+	GOSBVL	=CINRTN		| read the IN register
+	LA(5)	#803F		| load mask
+	A=A&C	A		| mask out keys
+	?A#0	A		any keys down?
+	GOYES	waitkeyup	yes, wait again
+	RTN			return
+ENDCODE
+;
+</FONT>
+</PRE></CODE>
+
+</BODY>
+</HTML>

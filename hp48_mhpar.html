@@ -1,0 +1,84 @@
+<HTML>
+<HEAD>
+
+<TITLE>The HP48-Guestbook</TITLE>
+
+<BODY TEXT="#000000"
+LINK="#7FFF00" VLINK="#FF0000">
+
+
+<META NAME="keywords" CONTENT="HP48, ml, sys, rpl, daniel, lidström, lidstrom">
+<META NAME="description" CONTENT="Great page! Come see!">
+<META NAME="generator" CONTENT="Notepad">
+<META NAME="author" CONTENT="Daniel Lidström">
+
+<SCRIPT LANGUAGE="JavaScript">
+</SCRIPT>
+</HEAD>
+
+
+<BODY>
+<CENTER>
+<FONT SIZE="+5" FACE="hp48gos3">HP48 Sources Page.</FONT> <P>
+
+
+<HR>
+
+This example will let you know how you can change the prolog of an object
+and in this case I will use the MHpar that is created when you
+play MINEHUNT on the HP48 (It is in ROM on the G(X) but may also be
+found on the Equation Card by HP). It contains some information
+on the current game, such as the minefield, positions, etc. It is
+actually a list containing these things as you will soon notice.
+<BR>
+</CENTER>
+This is the format HP used when storing in Library Data objects: <BR>
+<PRE>
+Prolog:	5 nibbles
+Size:	5 nibbles
+ID:	5 nibbles
+data...	to the end
+</PRE>
+
+<H1>Recalling MHpar</H1>
+<PRE><CODE>
+Size: 74.5 Checksum: # C912h
+::
+ 0LASTOWDOB!	(clear last command)
+ CK0NOLASTWD	(need no arguments)
+ '
+ ID MHpar
+ @		(recall MHpar)
+ NOT?SEMI	(do nothing if it doesn't exist)
+ TOTEMPOB	(copy to tempob area, otherwise
+		we would also change the variables contents)
+ CODE
+	C=DAT1	A	read the address of the Library Data
+	CD1EX		point D1 to the prolog
+	RSTK=C		save D1 here
+	A=DAT1	A	read the prolog into A[A]
+	LC(5)	=DOEXT0	load C[A] with the prolog of a Library Data
+	?C#A	A	are they equal?
+	GOYES	EXIT	if not, then exit
+	D1=D1+	10	point D1 to the library ID
+	A=DAT1	A	read it
+	LC(5)	#E7
+	?C#A	A	are they equal?
+	GOYES	EXIT	if not, then exit
+	D1=D1-	5	point D1 back to the length of the object
+	LC(5)	=DOBINT	change this to the prolog of a bint
+	DAT1=C	A	write it out, changing the ID to a bint
+	D1=D1-	5	point D1 back to the prolog
+	LC(5)	=DOLIST	change it to a list
+	DAT1=C	A	write it
+EXIT	C=RSTK		restore D1
+	D1=C		|
+	A=DAT0	A	exit back to rpl
+	D0=D0+	5
+	PC=(A)
+ENDCODE
+;
+</PRE></CODE>
+
+</BODY>
+</HTML>

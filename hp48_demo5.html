@@ -1,0 +1,113 @@
+<HTML>
+<HEAD>
+
+<TITLE>Hp48 Assembly-Programming</TITLE>
+
+<BODY TEXT="#000000" LINK="#7FFF00" VLINK="#FF0000">
+
+
+<META NAME="keywords" CONTENT="HP48, ml, sys, rpl, daniel, lidström, lidstrom">
+<META NAME="description" CONTENT="Great page! Come see!">
+<META NAME="generator" CONTENT="Notepad">
+<META NAME="author" CONTENT="Daniel Lidström">
+
+<BASE HREF=">
+
+<SCRIPT LANGUAGE="JavaScript">
+</SCRIPT>
+</HEAD>
+
+
+<BODY>
+<CENTER>
+<FONT SIZE="+5" FACE="hp48gos3">HP48 Sources Page.</FONT> <P>
+
+
+<HR>
+
+<H2>Countdown on the screen.</H2><BR>
+</CENTER>
+
+When drawing numbers to the screen, we have to know the bitmap data of each character.
+This font is the first thing in this program. One other thing to note here is
+the use of local labels. Sometimes assigning names to insignificant labels can
+be tiresome. Here, a "-" sign means the previous label while a "+" sign means the next label.<BR>
+
+<PRE> <CODE>
+Size: 117.5 Checksum: # 42F2h
+CODE
+	GOSBVL	=SAVPTR		think you should know what this is by now
+	INTOFF			turn off keyboard interrupts (don't read keys)
+	GOSUB	PASSFNT		pass the address of the font to RSTK
+* The following is the font. The bitmap is acquired in this manner:
+* As an example, consider a "zero":
+* Bit: 1 2 4 8
+*        *	yields the 2
+*      *   *	1+4=5
+*      *   *	  "
+*      *   *	  "
+*        *	2
+*		0
+	NIBHEX	255520		0
+	NIBHEX	322270		1
+	NIBHEX	747170		2
+	NIBHEX	747470		3
+	NIBHEX	557440		4
+	NIBHEX	717470		5
+	NIBHEX	717570		6
+	NIBHEX	742110		7
+	NIBHEX	757570		8
+	NIBHEX	757470		9
+PASSFNT	C=RSTK			fetch the address to the font
+	R0=C.F	A		save it here
+	GOSBVL	=D0->Row1	point D0 to first nibble of screen
+	R1=A.F	A		save here
+	LCHEX	10000		starting value
+-	GOSUB	DRAW5		draw the number
+	SETDEC			we need decimal mode
+	C=C-1	A		decrease number
+	SETHEX			back to hex mode
+	GONC	-		loop
+	INTON			turn on interrupts
+	GOVLNG	=GETPTRLOOP	exit
+
+* Subroutines
+
+DRAW5	RSTK=C			save number on return stack
+	A=C	A
+	P=	16-5		Save number in high A[W]
+-	ASRC
+	P=P+1
+	GONC	-
+	A=R1.F	A
+	D0=A			->display
+	P=	16-5		5 digits
+	C=P	15
+	P=	0
+--	A=0	A
+	ASLC			A[A] = digit
+	C=R0.F	A		C[A] = ->font
+	A=A+A	A
+	C=C+A	A
+	C=C+A	A
+	C=C+A	A		C[A] = ->font+6*digit
+	CD0EX			C[A] = ->display
+	A=DAT0	6		A[0-5] = font data
+	D0=C			And restore ->display
+-	DAT0=A	P		Draw 6 bitrows
+	D0=D0+	34
+	P=P+1			using P as counter allows us to use
+	?P#	6		DAT0=A P, and thus a single A=DAT0 6
+	GOYES	-
+	P=	0
+	D0=C			Restore ->display
+	D0=D0+	1		And advance to next digit
+	C=C+1	S
+	GONC	--
+	C=RSTK			Restore C[A]
+	RTN
+ENDCODE
+</PRE> </CODE>
+
+</BODY>
+</HTML>

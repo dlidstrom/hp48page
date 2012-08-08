@@ -1,0 +1,110 @@
+<HTML>
+<HEAD>
+
+<TITLE>The HP48-Guestbook</TITLE>
+
+<BODY TEXT="#000000"
+LINK="#7FFF00" VLINK="#FF0000">
+
+
+<META NAME="keywords" CONTENT="HP48, ml, sys, rpl, daniel, lidström, lidstrom">
+<META NAME="description" CONTENT="Great page! Come see!">
+<META NAME="generator" CONTENT="Notepad">
+<META NAME="author" CONTENT="Daniel Lidström">
+
+<BASE HREF=">
+
+<SCRIPT LANGUAGE="JavaScript">
+</SCRIPT>
+</HEAD>
+
+
+<BODY>
+<CENTER>
+<FONT SIZE="+5" FACE="hp48gos3">HP48 Sources Page.</FONT> <P>
+</CENTER>
+
+<HR>
+
+Some utilities for creating and searching through strings. <BR>
+<H3>Create a string.</H3>
+Returns a string with the given size. <BR>
+
+<PRE>
+Size: 54.5 Checksum: # F2F7h
+::
+ CK1NoBlame	(need one argument)
+ CKREAL		(must be a real)
+ COERCE		(convert it to a bint)
+ CODE
+	GOSBVL	=POP#		pop the number into A[A]
+	GOSBVL	=SAVPTR		save internal pointers
+	C=A	A
+	RSTK=C			save number here a second
+	GOSBVL	=MAKE$		create a string with size in C[A], R0[A] -> string prolog
+	C=RSTK			recall the number
+	C=C-1	A		prepare for loop
+	GOC	exit		exit if null string
+	LA(5)	32		ascii for a space, put whatever character you want here
+loop	DAT0=A	2		write the character
+	D0=D0+	2		advance pointer
+	C=C-1	A		decrement counter
+	GONC	loop		loop until carry set
+exit	GOSBVL	=GETPTR		restore pointers
+	A=R0.F	A		prepare to push the string
+	GOVLNG	=PUSHA		push it to the stack and exit
+ ENDCODE
+;
+<PRE><P>
+<H3>Searching a string for a character.</H3>
+Given a string and an ascii number it returns the number of occurrences.<BR>
+
+<PRE>
+Size: 83.5 Checksum: # 3455h
+::
+ 0LASTOWDOB!	(clear last command)
+ CK2NOLASTWD	(need two arguments)
+ CK&DISPATCH1	(2: string 1: real)
+ FORTYNINE	(# 31h)
+ ::
+   COERCE	(convert the real to a bint)
+   #>CHR	(convert into a character)
+   CODE
+	GOSBVL	=SAVPTR		save pointers
+	CD1EX			copy D1 to C[A]
+	D1=C
+	A=C	A		save D1 in A[A]
+	C=DAT1	A		read address of character
+	D1=C			point D1 to prolog of character
+	D1=D1+	5		advance to ascii-value of character
+	C=DAT1	B		read character into C[A]
+	D=C	B		store in D[B]
+	C=A	A		recall D1
+	D1=C			restore D1
+	D1=D1+	5		advance to string on level 2
+	C=DAT1	A		read address of string into C[A]
+	D1=C			point D1 to string prolog
+	D1=D1+	5		skip prolog
+	A=DAT1	A		read length of string
+	A=A-CON	A,5		subtract to get character count (size includes itself)
+	ASRB.F	A		divide by two
+	D1=D1+	5		skip length
+	B=0	A		initialize counter to zero
+loop	A=A-1	A		done?
+	GOC	done		yes, exit
+	C=DAT1	B		read character from string
+	D1=D1+	2		advance pointer
+	?C#D	B		no match?
+	GOYES	loop		then loop
+	B=B+1	A		else increment counter
+	GOTO	loop		then loop
+done	A=B	A		copy counter to A[A]
+	GOVLNG	=PUSH#ALOOP	push it and continue rpl
+   ENDCODE
+
+   UNROT2DROP	(drop unwanted arguments)
+   UNCOERCE	(convert bint to float)
+ ;
+;
+</BODY>
+</HTML>

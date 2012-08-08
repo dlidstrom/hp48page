@@ -1,0 +1,264 @@
+<HTML>
+<HEAD>
+<TITLE>HP48 Assembly-Programming</TITLE>
+<BODY BGCOLOR="#FFFFFF">
+</HEAD>
+<BODY>
+<H1> Primer</H1>
+This is a short description of some of the registers used while programming in saturn assembly.<P>
+
+<H2> Data pointers </H2>
+D0: Instruction pointer. <BR>
+D1: Stack pointer. <BR>
+
+<H2> Working registers </H2>
+
+A: Can be used freely. <BR>
+B: Pointer to top of return stack. <BR>
+C: Can be used freely. <BR>
+D: Amount of free memory between return stack and stack. <BR>
+
+<H2> Scratch registers </H2>
+
+R0, R1, R2, R3, R4: Used to temporarily store data, addresses etc. <BR>
+
+<H2> Others </H2>
+P: Pointer used to point into C and for loops. I must add one thing about this register. Its value
+determines where loading instructions start their loading. For example, if P=15 then loading A or C
+will load that value into field S (see below for architecture). P must be 0 when exiting your program!<BR>
+IN: Input, used in keyscanning. <BR>
+OUT: Output, used to generate tones and in keyscanning. <BR>
+ST: Status bits. The lower 12 can be freely used while the upper four are used by the operating
+system. <BR>
+Return stack: An 8-level stack used to temporarily hold addresses. Note that you must never use
+more than 6 levels as the top 2 are used by the interrupt system. <BR>
+
+<HR>
+
+<H1> Example usage </H1>
+<H2> Your first program </H2>
+
+When you start programming in ml you need to make sure you restore the rpl pointers when the program finishes. You
+can either save them at the beginning and restore them at the end. The most common entries to do this are:
+<PRE>
+=SAVPTR		save the pointers
+=GETPTRLOOP	restore them and continue with rpl
+</PRE>
+You could also however, decide not to use B[A], D[A], D0, and D1 (or restore them
+yourself). Then you would exit similar to this (we save D1 to show an example):
+<PRE>
+	CD1EX		swap D1 and C[A]
+	RSTK=C		save D1 on returnstack
+	.
+	.
+	.
+	C=RSTK		retrieve D1 from return stack
+	D1=C		restore D1 from C[A]
+* continue with rpl
+	D0=D0+	5	point to next instruction
+	A=DAT0	A	read it into A[A]
+	PC=(A)		execute next instruction
+</PRE>
+You could also exit with a command of your choice:
+<PRE>
+	LC(5)	=UNCOERCE
+	A=C	A
+	PC=(A)
+</PRE>
+Also remember to ensure P=0 and cpu is in HEXMODE.
+
+<H2> The working registers </H2>
+
+<TABLE BORDER CELLPADDING=4 WIDTH="537" bordercolor="#000000" >
+<TR>
+<TD COLSPAN="16">
+<CENTER>The Arhitecture of A, B, C, and D
+</CENTER>
+</TD>
+</TR>
+<TR>
+<TD WIDTH="6%">
+<CENTER><FONT SIZE=+1>15</FONT></CENTER>
+</TD>
+<TD WIDTH="6%">
+<CENTER><FONT SIZE=+1>14</FONT></CENTER>
+</TD>
+<TD WIDTH="6%">
+<CENTER><FONT SIZE=+1>13</FONT></CENTER>
+</TD>
+<TD WIDTH="6%">
+<CENTER><FONT SIZE=+1>12</FONT></CENTER>
+</TD>
+<TD WIDTH="6%">
+<CENTER><FONT SIZE=+1>11</FONT></CENTER>
+</TD>
+<TD WIDTH="6%">
+<CENTER><FONT SIZE=+1>10</FONT></CENTER>
+</TD>
+<TD WIDTH="6%">
+<CENTER><FONT SIZE=+1>9</FONT></CENTER>
+</TD>
+<TD WIDTH="6%">
+<CENTER><FONT SIZE=+1>8</FONT></CENTER>
+</TD>
+<TD WIDTH="6%">
+<CENTER><FONT SIZE=+1>7</FONT></CENTER>
+</TD>
+<TD WIDTH="6%">
+<CENTER><FONT SIZE=+1>6</FONT></CENTER>
+</TD>
+<TD WIDTH="6%">
+<CENTER><FONT SIZE=+1>5</FONT></CENTER>
+</TD>
+<TD WIDTH="6%">
+<CENTER><FONT SIZE=+1>4</FONT></CENTER>
+</TD>
+<TD WIDTH="6%">
+<CENTER><FONT SIZE=+1>3</FONT></CENTER>
+</TD>
+<TD WIDTH="6%">
+<CENTER><FONT SIZE=+1>2</FONT></CENTER>
+</TD>
+<TD WIDTH="6%">
+<CENTER><FONT SIZE=+1>1</FONT></CENTER>
+</TD>
+<TD WIDTH="6%">
+<CENTER><FONT SIZE=+1>0</FONT></CENTER>
+</TD>
+</TR>
+<TR>
+<TD COLSPAN="16">
+<CENTER><FONT SIZE=+1>W</FONT></CENTER>
+</TD>
+</TR>
+<TR>
+<TD WIDTH="6%">
+<CENTER><FONT SIZE=+1>S</FONT></CENTER>
+</TD>
+<TD COLSPAN="12" WIDTH="75%">
+<CENTER><FONT SIZE=+1>M</FONT></CENTER>
+</TD>
+<TD COLSPAN="3" WIDTH="19%">
+<CENTER><FONT SIZE=+1>X</FONT></CENTER>
+</TD>
+</TR>
+<TR>
+<TD COLSPAN="11" WIDTH="69%">
+<CENTER>&nbsp;</CENTER>
+</TD>
+<TD COLSPAN="5" WIDTH="31%">
+<CENTER><FONT SIZE=+1>A</FONT></CENTER>
+</TD>
+</TR>
+<TR>
+<TD COLSPAN="13" WIDTH="81%">
+<CENTER>&nbsp;</CENTER>
+</TD>
+<TD WIDTH="6%">
+<CENTER><FONT SIZE=+1>XS</FONT></CENTER>
+</TD>
+<TD COLSPAN="2" WIDTH="13%">
+<CENTER><FONT SIZE=+1>B</FONT></CENTER>
+</TD>
+</TR>
+</TABLE></CENTER>
+<BR>
+A, B, C, and D are structured this way. A[A] means field A of A while D[S] means field S of D.
+C[P] specifies the nibble pointed to by P.  I.e. if P=15 then C[P] is equal to C[S]. A=A+A WP
+doubles the values in register A from nibbles 0 to P.
+
+<H2> Reading data </H2>
+To point D0 at the screen for example, use the supported entry =D0->Row1. Now you can read from the screen and/or
+write to the screen:
+reading 5 nibbles:
+<PRE>
+	GOSBVL	=D0->Row1	point D0 to top-left corner of currently displayed grob
+	C=DAT0	A		read 5 nibbles
+</PRE>
+writing 5 nibbles:
+<PRE>
+	GOSBVL	=D0->Row1
+	LC(5)	#FFFFF		load C with 5*4 pixels (#Fh = #1111b)
+	DAT0=C	A
+</PRE>
+Observe that by doing D0=D0+	1 you advance the pointer in this case by four pixels, a nibble. Since the screen is
+34 nibbles wide, you can move down one row by executing:
+<PRE>
+	D0=D0+	16
+	D0=D0+	16
+	D0=D0+	2
+</PRE>
+Say for example, that you want to turn on the pixel at coordinate { # 65d # 32d }, then you could go about it like this:
+<PRE>
+
+CODE	GOSBVL	=SAVPTR		save rpl pointers
+	GOSBVL	=D0->Row1	point D0 to top-left corner of display
+	LC(5)	34*32+16	32 rows down, 16*4 pixels to the right
+	AD0EX			swap A[A] with D0 (actually you don't need to swap here, see with DB)
+	A=A+C	A		add offset
+	AD0EX			swap back
+	LC(5)	#2		#2h = #0010b
+	DAT0=C	1		write one nibble
+* note: since data is written "backwards", the second pixel in the nibble will be lit: 0*00 (0-off, *-lit)
+	GOVLNG	=GETPTRLOOP	restore rpl pointers and continue rpl
+ENDCODE
+</PRE>
+Assemble it, put it on stack level 2 and run <TT> << CLLCD EVAL 7 FREEZE >> </TT>
+
+<H2>Accessing the stack</H2>
+Dropping an object:
+<PRE>
+	D1=D1+	5	advance stack pointer to next level
+	D=D+1	A	increment available memory
+</PRE>
+Dropping is easy and can be done quite fast. Dropping several objects:
+<PRE>
+CODE
+	P=	16-5	drop five objects
+loop	D1=D1+	5	drop it
+	D=D+1	A
+	P=P+1		add one to the counter
+	GONC	loop	loop until done
+	D0=D0+	5
+	A=DAT0	A
+	PC=(A)
+ENDCODE
+</PRE>
+I let P=11 and then count up to 16. When P=15 and I add once more, P wraps around to 0 and the carry flag is set, the
+loop is done.
+<P>
+Reading another pointer, D[A], amount of available addresses:
+<PRE>
+CODE
+	GOSBVL	=SAVPTR		save pointers
+	C=D	A		multiply available memory by five
+	C=C+C	A
+	C=C+C	A
+	C=C+D	A
+	CSRB.F	A		divide number by two
+	R0=C.F	A		prepare to push number
+	GOSBVL	=PUSH#		push it to the stack, restore pointers
+	LC(5)	=UNCOERCE	exit, converting the "bint" to a float
+	A=C	A
+	PC=(A)
+ENDCODE
+</PRE>
+Since an address is five nibbles we multiply by five, and we want the answer in bytes, thus we
+divide by two. CSRB.F A shifts register C field A right one bit, effectively dividing its contents
+by two.
+<H2> The program counter (PC) </H2>
+This counter contains the address of the current instruction being executed. The
+simple example here calculates the address of itself and puts itself on the stack.
+Remember the stack is only a pile of pointers, not the objects themself. See the glossary
+for help in understanding how objects are structured.
+<PRE>
+CODE
+	A=PC		read the program counter into A[A]
+	LC(5)	14	load C[A] with the amount to subtract
+	A=A-C	A	A[A] now contains the prolog of the code object
+	GOVLNG	=PUSHA	push it to the stack
+ENDCODE
+</PRE>
+Example programs greatly appreciated!
+</BODY>
+</HTML>

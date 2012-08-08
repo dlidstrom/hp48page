@@ -1,0 +1,135 @@
+<HTML>
+<HEAD>
+
+<TITLE>The HP48-ML-Guide</TITLE>
+
+<!-- <BODY TEXT="#000000" LINK="#7FFF00" VLINK="#FF0000"> -->
+
+
+<META NAME="keywords" CONTENT="HP48, ml, sys, rpl, daniel, lidström, lidstrom">
+<META NAME="description" CONTENT="Great page! Come see!">
+<META NAME="generator" CONTENT="Notepad">
+<META NAME="author" CONTENT="Daniel Lidström">
+
+<BASE HREF=">
+
+<SCRIPT LANGUAGE="JavaScript">
+</SCRIPT>
+</HEAD>
+
+
+<BODY>
+<CENTER>
+<FONT SIZE="+5">Jazz tutor.</FONT> <P>
+
+
+<HR>
+
+This document will introduce you to Jazz, *the* programming environment for the HP48.
+It provides an easy way to compile small things like the examples on my page,
+although the library and the entries require ~100Kb.<BR>
+</CENTER>
+
+<H1>Files:</H1>
+You will need two rather large libraries before you can start. These are the Jazz library
+and the entries (explanation later). Follow the link on the main page to Mika Heiskanen's
+homepage if you haven't already downloaded Jazz. You can also get Goodies Disk #11 from
+<A HREF="http://www.jps.net/joehorn/HP48.htm" TARGET="_top">Joe Horn</A> where you will find an entire directory related to Jazz. Included is also the Hack
+library. <BR>
+Now install both Jazz and the entries library in port 0/1, turn your HP48 off then back on
+and you're on the way.<BR>
+
+<H1>A simple example</H1>
+Let's see what we can do. Lets start by compiling a simple sys-rpl program to multiply two
+numbers, let them be real numbers. <BR>
+Type <PRE> "" ED </PRE> this will start the intended sys-rpl/ml editor with an empty string
+(this editor only works on strings). You should see a cursor blinking away. Turn on alpha
+keys in the usual way and press leftshift [-], the sequence normally used to start a
+program. You will see a empty sys-rpl program, and the cursor will automatically jump
+down and indent:<PRE>::
+&nbsp;<- this is where the cursor will be
+;</PRE>
+Now type the necessary commands to multiply two reals, preferrably with argument checking
+(of course you can leave out the comments):
+<PRE>
+::
+  CK2NOLASTWD			( check for two arguments )
+  CKREAL SWAP CKREAL		( check for reals in both stack levels )
+  %*				( multiply them )
+;   
+</PRE>
+Note that you can either press [SPC] to insert a space between the arguments, or you can
+press [ENTER] to automatically insert a carriage-return and indent (alpha keys must be
+activated). <BR>
+Now turn off alpha keys and push the string to the stack by pressing the enter-key (the
+on-key is only for interrupting things). Assemble the program with <PRE>ASS</PRE> and you
+should see something like<PRE> External External ... </PRE> on the stack. (Wow!) <BR>
+Try it out on two numbers. Observe that as there is no argument checking with commands like 
+%* and SWAP we had to make sure for ourselves that the stack really contained two reals,
+otherwise bad things could happen... <P>
+Let us now try another useful command, the DISassemble command (DIS). Put your newly created
+program on the stack and DIS it. Check that out! Your program was converted into the
+source you just wrote. Very good for checking out other peoples work. You could also check
+out what HP has done in a command. We'll try it out. Put { DROP } on the stack and DIS it.
+Run ED. You will only see<PRE>
+{
+  xDROP
+}</PRE> which is just what the user-rpl command DROP looks like in sys-rpl (exlcuding 
+the list of course). Place the marker on xDROP and press rightshift [+/-] to reveal the secret
+of DROP. Now what happened here? Well, the command was disassembled, and a new editor
+was spawned! You see that CK1 command? That's the one that checks for
+arguments. Then there
+is a regular DROP without any checks. You could also disassemble this DROP
+to see the
+machine code beneath it. Press enter a few times to return and exit.
+
+<H1>The entries</H1>
+The entries you installed (hopefully) allow us to use nice words like CK2 and CKREAL instead
+of typing the address to the entry. Without the entries you would only see things like
+PTR 1D39, PTR 15777, etc. If you still encounter these things in your ROM disassembly you
+should now that these are just unsupported entries (there are quite a lot of them). Of some
+reason, the French programmers like to use the addresses to the entries instead of the
+substituted names given by HP. The only advantage of this is more space in your HP48.<P>
+<H2>The entries catalog (EC)</H2>
+The entries catalog is used to view the entries. You can find entries ([F]) and push the address
+of them onto the stack ([ENTER]). Example: type a strange string consisting of a lot of
+strange characters, characters that are illegal in a variable name: - + * etc. Launch the
+catalog, press F and type $. The browser searches for the first occurrance of this character.
+Press [NXT] and navigate your way down to $>ID. You may have to press several times and use
+the arrow keys. Once this entry is the top one, press rightshift [ENTER], then exit with [ON].
+Assemble the entry and with your string on level two and the entry on level one, press [EVAL].
+Be very sure that this is what the stack looks like:
+<PRE>2: "....."
+1: External </PRE> Now you can store something into this variable!<P>
+This may be enough for one day. Read about the commands of the editor in the jazz docs. Once
+you get this to work, we may continue with the debuggers. Also try SSTK, the sys-rpl stack!
+<P>
+<H1>SDB - a sys-rpl debugger</H1>
+A great way to find mistakes in your programs is to debug them. There is an inbuilt debugger intendend
+for user-rpl and I'm sure you have already used it. It will not work with system level programs
+though. This is where SDB comes in. We'll start with an example:
+Put your program from above on the stack and execute SDB. Just like you would when debugging
+user-rpl. This will start a new SOL (system outer loop), in fact, it will start SSTK. Anyway,
+the commands now available are: <BR>
+<PRE>
+NAME	Unshifted			Rightshifted
+->SST:	single steps next command	executes rest of secondary (:: ;)
+->IN:	enter next command
+SNXT:	show next command
+SST->:	toggle continuous mode
+	press again to toggle fast/slow
+IN->:	like SST-> but for ->IN
+DB:	starts DB on next command/code
+KILL:	kill program
+SKIP:	skip next command
+SEXEC:
+SBRK:
+LOOPS:	Browse loop environments
+LAMS:	Browse lambda variables
+</PRE>
+See the Jazz document for details about the commands. <BR>
+Be very careful though when you are debugging since if you mess up the stack, you could
+get a crash. If you loose the SDB menu, just execute SDB again. <BR>
+&nbsp;
+</BODY>
+</HTML>

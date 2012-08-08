@@ -1,0 +1,73 @@
+<HTML>
+<HEAD>
+
+<TITLE>The HP48-Guestbook</TITLE>
+
+<BODY TEXT="#000000"
+LINK="#7FFF00" VLINK="#FF0000">
+
+
+<META NAME="keywords" CONTENT="HP48, ml, sys, rpl, daniel, lidström, lidstrom">
+<META NAME="description" CONTENT="Great page! Come see!">
+<META NAME="generator" CONTENT="Notepad">
+<META NAME="author" CONTENT="Daniel Lidström">
+
+<BASE HREF=">
+
+<SCRIPT LANGUAGE="JavaScript">
+</SCRIPT>
+</HEAD>
+
+
+<BODY>
+<CENTER>
+<FONT SIZE="+5" FACE="hp48gos3">HP48 Sources Page.</FONT> <P>
+
+
+<HR>
+
+This program measures the clock speed of your HP48. <P>
+</CENTER>
+
+<H1>Processor speed</H1>
+<CODE> <PRE>
+
+CODE
+	GOSBVL	=SAVPTR		save the internal pointers
+	ST=0	15		turn off interrupts
+	INTOFF			turn off keyboard interrupts
+	GOSUB	waitkeyup	wait for user to let go of key
+	GOSBVL	=DispOff	turn off the display
+*				yes, it's that easy
+	GOSBVL	=clkspd		measure clock speed
+*				A[A] = speed/16
+	GOSBVL	=DispOn		turn on display
+	INTON			turn on keyboard interrupts
+	ST=1	15		turn on all interrupts
+	R0=A.F	A		prepare to push R0[A]
+	GOSBVL	=PUSH#		push R0[A] to stack, restore pointers
+	GOSUB	srpl		put the following data on the return-stack
+	CON(5)	=DOCOL		start a program
+	CON(5)	=UNCOERCE	convert "bint" to float
+	CON(5)	=%16		multiply by sixteen
+	CON(5)	=%*		*
+	CON(5)	=SEMI		end program
+srpl	C=RSTK			pop address of data into C[A]
+	A=C	A
+	PC=(A)			branch (execute) program
+waitkeyup
+	LC(3)	#1FF		look for all keys
+	OUT=C			set the OUT register
+	GOSBVL	=CINRTN		read the IN register
+	LA(5)	#0803F		load mask
+	A=A&C	A		mask out keys
+	?A#0	A		any keys down?
+	GOYES	waitkeyup	yes, check again
+	RTN			return
+ENDCODE
+
+
+</PRE> </CODE>
+
+</BODY>
+</HTML>
